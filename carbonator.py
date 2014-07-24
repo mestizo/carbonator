@@ -104,19 +104,23 @@ class BurpExtender(IBurpExtender, IHttpListener, IScannerListener):
 		print "For questions or feature requests contact us at carbonator at integris security dot com."
 		print "Visit carbonator at https://www.integrissecurity.com/Carbonator"
 		return False
-	elif cli[0] == 'https' or cli[0] == 'http': #cli[0]=scheme,cli[1]=fqdn,cli[2]=port
-		self.scheme = cli[0]
-		self.fqdn = cli[1]
-		self.port = int(cli[2])
-		if len(cli) == 3:
-			self.path = '/'
-		elif len(cli) >= 4:
-			self.path = cli[3]
-		else:
-			print "Unknown number of CLI arguments"
-			return False
-		self.url = URL(self.scheme,self.fqdn,self.port,self.path)
 	else:
-		print "Invalid command line arguments supplied"
-		return False
+            self.url1 = cli[0]
+            self.url = URL(self.url1)
+            self.scheme = self.url.getProtocol()
+            self.fqdn = self.url.getHost()
+            self.port1 = self.url.getPort()
+            if self.port1 == -1 and self.scheme == 'http':
+                self.port = 80
+            elif self.port1 == -1 and self.scheme == 'https':
+                self.port = 443
+            else:
+                self.port = self.port1
+            self.path = self.url.getFile()
+            #print "self.url: " + str(self.url) + "\n"
+            #print "Scheme: " + self.scheme + "\n"
+            #print "FQDN: " + self.fqdn + "\n"
+            #print "Port: " + str(self.port1) + "\n"
+            #print "Path: " + self.path + "\n"
+            
 	return True
